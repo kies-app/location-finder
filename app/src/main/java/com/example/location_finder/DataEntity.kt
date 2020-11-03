@@ -7,5 +7,4 @@ import java.sql.Blob
 @Entity
 data class DataEntity(@PrimaryKey val title:String,
                       val text:String,
-                      
                       val picture:Blob)
