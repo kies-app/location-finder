@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
                 data
             )
 
-            test_list.adapter = adapter
+           // test_list.adapter = adapter
 
 
 
