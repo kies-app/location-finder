@@ -1,24 +1,28 @@
 package com.example.location_finder
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 
-class RoomViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository : RoomRepository
+class RoomViewModel(private val repository: RoomRepository) : ViewModel() {
 
-    val allDatas:LiveData<List<DataEntity>>
+    val allDatas: Flow<List<DataEntity>> = repository.allDatas
 
-    init {
-        val datasDao = PlaceRoomDatabase.getDatabase(application,viewModelScope).wordDao()
-        repository = RoomRepository(datasDao)
-        allDatas = repository.allDatas
-    }
-
-    fun insert(data:DataEntity) = viewModelScope.launch(Dispatchers.IO){
+    fun insert(data:DataEntity) = viewModelScope.launch{
         repository.insert(data)
+    }
+}
+
+class RoomViewModelFactory(private val repository: RoomRepository):ViewModelProvider.Factory{
+    override fun<T:ViewModel> create(modelClass:Class<T>):T{
+        if (modelClass.isAssignableFrom(RoomViewModel::class.java)){
+            @Suppress("UNCHECKED_CAST")
+            return RoomViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

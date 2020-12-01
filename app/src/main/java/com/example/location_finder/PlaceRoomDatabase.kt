@@ -17,8 +17,8 @@ public abstract class PlaceRoomDatabase : RoomDatabase() {
     private class PlaceDataBaseCallback(
         private val scope: CoroutineScope
     ):RoomDatabase.Callback(){
-        override fun onOpen(db: SupportSQLiteDatabase) {
-            super.onOpen(db)
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
                     val wordDao = database.wordDao()
@@ -38,7 +38,8 @@ public abstract class PlaceRoomDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: PlaceRoomDatabase? = null
 
-        fun getDatabase(context: Context, viewModelScope: CoroutineScope): PlaceRoomDatabase {
+        fun getDatabase(context: Context,scope: CoroutineScope
+        ): PlaceRoomDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
@@ -46,7 +47,9 @@ public abstract class PlaceRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     PlaceRoomDatabase::class.java,
                     "Place_database"
-                ).build()
+                )
+                    .addCallback(PlaceDataBaseCallback(scope))
+                    .build()
                 INSTANCE = instance
                 // return instance
                 instance

@@ -1,12 +1,15 @@
 package com.example.location_finder
 
-import androidx.lifecycle.LiveData
+import androidx.annotation.WorkerThread
+import kotlinx.coroutines.flow.Flow
 
 class RoomRepository(private val wordDao: WordDao) {
 
-    val allDatas: LiveData<List<DataEntity>> = wordDao.getAlphabetizedWords()
+    val allDatas: Flow<List<DataEntity>> = wordDao.getAlphabetizedWords()
 
-    suspend fun insert(data:DataEntity){
-        wordDao.insert(data)
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insert(word:DataEntity){
+        wordDao.insert(word)
     }
 }
